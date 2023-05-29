@@ -1,0 +1,1 @@
+export const jwtConstant = 'jwtConstants';
