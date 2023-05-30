@@ -6,10 +6,16 @@ export type GroupDocument = HydratedDocument<Group>;
 @Schema()
 export class Group {
   @Prop({
-    type: Array<SchemaTypes.Types.ObjectId>,
+    type: SchemaTypes.Types.ObjectId,
     ref: 'User',
-  })  
-  group: string[];
+  })
+  buyerId: string;
+
+  @Prop({
+    type: SchemaTypes.Types.ObjectId,
+    ref: 'User',
+  })
+  sellerId: string;
 }
 
 export const GroupSchema = SchemaFactory.createForClass(Group);

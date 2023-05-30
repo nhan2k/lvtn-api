@@ -1,15 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { CreateChatDto } from './dto/create-chat.dto';
+import { CreateChatDto, CreateMessageDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
+import { ChatGroupRepository } from './repository/chat.repository';
+import { map } from 'rxjs';
 
 @Injectable()
 export class ChatService {
-  create(createChatDto: CreateChatDto) {
-    return 'This action adds a new chat';
+  constructor(private readonly chatRepository: ChatGroupRepository) {}
+
+  async create(createChatDto: CreateChatDto, userId: string) {
+    return await this.chatRepository.createGroup(createChatDto._id, userId);
   }
 
-  findAll() {
-    return `This action returns all chat`;
+  findAll(userId: string) {
+    return this.chatRepository.getAllGroup(userId);
   }
 
   findOne(id: number) {
@@ -22,5 +26,23 @@ export class ChatService {
 
   remove(id: number) {
     return `This action removes a #${id} chat`;
+  }
+
+  async createMessage(createChatDto: CreateMessageDto, userId: string) {
+    const response = await this.chatRepository.createMessage(
+      createChatDto,
+      userId,
+    );
+
+    return response;
+  }
+
+  async findAllMessagesByGroupId(groupId: string, userId: string) {
+    const message = await this.chatRepository.getMessagesByGroupId(
+      groupId,
+      userId,
+    );
+
+    return message as CreateMessageDto[];
   }
 }

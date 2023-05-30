@@ -5,6 +5,12 @@ export type MessageDocument = HydratedDocument<Message>;
 
 @Schema()
 export class Message {
+  @Prop({
+    type: SchemaTypes.Types.ObjectId,
+    ref: 'User',
+  })
+  userId: string;
+
   @Prop({ type: String, default: null })
   text: string;
 
