@@ -24,7 +24,7 @@ export class ChatGroupRepository implements IChatGroupRepository {
         userId: userId,
       });
 
-      return await message.save();
+      return (await message.save()).populate('userId');
     } catch (error) {
       throw new Error(error);
     }
@@ -39,12 +39,27 @@ export class ChatGroupRepository implements IChatGroupRepository {
         .find({
           groupId,
         })
-        .sort({ createdAt: 'asc' })
+        .sort({ updatedAt: 'asc' })
         .populate({
           path: 'userId',
           select: '-__v -password',
         })
         .exec();
+
+      let messageMiss = await this.chatMessageModel.find({
+        groupId,
+        isSeen: false,
+      });
+      if (messageMiss.length > 0) {
+        const updatePromises = messageMiss.map(async (message) => {
+          if (userId !== message?.userId) {
+            await this.chatMessageModel.findByIdAndUpdate(message._id, {
+              isSeen: true,
+            });
+          }
+        });
+        await Promise.all(updatePromises);
+      }
 
       return messages;
     } catch (error) {
@@ -65,9 +80,16 @@ export class ChatGroupRepository implements IChatGroupRepository {
             },
           ],
         })
+        .sort({ updatedAt: 'desc' })
         .populate('sellerId')
         .populate('buyerId')
-        .populate('postId')
+        .populate({
+          path: 'postId',
+          populate: {
+            path: 'userId',
+            select: '-__v -password',
+          },
+        })
         .exec();
 
       return groupFind;

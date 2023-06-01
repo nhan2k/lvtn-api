@@ -21,6 +21,7 @@ export class UserRepository implements IUserRepository {
         .find({
           role: 'user',
         })
+        .sort({ updatedAt: 'desc' })
         .exec();
     } catch (error) {
       throw new Error(error.message);

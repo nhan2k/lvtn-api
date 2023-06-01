@@ -78,6 +78,7 @@ export class PostRepository implements IPostRepository {
               isReview: true,
               categoryName,
             })
+            .sort({ updatedAt: 'desc' })
             .populate({
               path: 'apartmentPostId',
             })
@@ -89,6 +90,7 @@ export class PostRepository implements IPostRepository {
               isReview: true,
               categoryName,
             })
+            .sort({ updatedAt: 'desc' })
             .populate({
               path: 'carPostId',
             })
@@ -100,6 +102,7 @@ export class PostRepository implements IPostRepository {
               isReview: true,
               categoryName,
             })
+            .sort({ updatedAt: 'desc' })
             .populate({
               path: 'groundPostId',
             })
@@ -111,6 +114,7 @@ export class PostRepository implements IPostRepository {
               isReview: true,
               categoryName,
             })
+            .sort({ updatedAt: 'desc' })
             .populate({
               path: 'housePostId',
             })
@@ -122,6 +126,7 @@ export class PostRepository implements IPostRepository {
               isReview: true,
               categoryName,
             })
+            .sort({ updatedAt: 'desc' })
             .populate({
               path: 'laptopPostId',
             })
@@ -133,6 +138,7 @@ export class PostRepository implements IPostRepository {
               isReview: true,
               categoryName,
             })
+            .sort({ updatedAt: 'desc' })
             .populate({
               path: 'motelRoomPostId',
             })
@@ -144,6 +150,7 @@ export class PostRepository implements IPostRepository {
               isReview: true,
               categoryName,
             })
+            .sort({ updatedAt: 'desc' })
             .populate({
               path: 'officePostId',
             })
@@ -155,6 +162,7 @@ export class PostRepository implements IPostRepository {
               isReview: true,
               categoryName,
             })
+            .sort({ updatedAt: 'desc' })
             .populate({
               path: 'motorbikePostId',
             })
@@ -166,6 +174,7 @@ export class PostRepository implements IPostRepository {
               isReview: true,
               categoryName,
             })
+            .sort({ updatedAt: 'desc' })
             .populate({
               path: 'electricBicyclePostId',
             })
@@ -177,6 +186,7 @@ export class PostRepository implements IPostRepository {
               isReview: true,
               categoryName,
             })
+            .sort({ updatedAt: 'desc' })
             .populate({
               path: 'phonePostId',
             })
@@ -187,6 +197,7 @@ export class PostRepository implements IPostRepository {
               status: 'show',
               isReview: true,
             })
+            .sort({ updatedAt: 'desc' })
             .exec();
       }
     } catch (error) {
@@ -196,7 +207,7 @@ export class PostRepository implements IPostRepository {
 
   async adminFindAll(): Promise<Post[]> {
     try {
-      return await this.postModel.find().exec();
+      return await this.postModel.find().sort({ updatedAt: 'desc' }).exec();
     } catch (error) {
       throw new Error(error.message);
     }
@@ -209,6 +220,7 @@ export class PostRepository implements IPostRepository {
           userId,
           status,
         })
+        .sort({ updatedAt: 'desc' })
         .populate({
           path: 'userId',
           select: '-__v -password',

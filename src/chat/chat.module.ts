@@ -17,5 +17,6 @@ import { User, UserSchema } from 'src/user/schema/user.schema';
   ],
   controllers: [ChatController],
   providers: [ChatService, ChatGroupRepository],
+  exports: [ChatModule, ChatService],
 })
 export class ChatModule {}

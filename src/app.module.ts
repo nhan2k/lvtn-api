@@ -21,7 +21,7 @@ import { ChatModule } from './chat/chat.module';
     UserModule,
     RatingModule,
     PostModule,
-    // ChatGroupModule,
+    ChatGroupModule,
 
     MulterModule.register({
       dest: './uploads',

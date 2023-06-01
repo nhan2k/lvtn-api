@@ -17,6 +17,9 @@ export class Message {
   @Prop({ type: String, default: null })
   filePath: string;
 
+  @Prop({ type: String, default: false })
+  isSeen: boolean;
+
   @Prop({
     type: SchemaTypes.Types.ObjectId,
     ref: 'Group',
