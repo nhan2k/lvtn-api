@@ -29,7 +29,7 @@ export class CarPost {
   @Prop({ type: String, required: true })
   color: string;
 
-  @Prop({ type: String, enum: ['Mới', 'Đã sử dụng'], required: true })
+  @Prop({ type: String, required: true })
   statusCar: string;
 
   @Prop({ type: Number, required: true })

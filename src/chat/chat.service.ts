@@ -8,8 +8,8 @@ import { map } from 'rxjs';
 export class ChatService {
   constructor(private readonly chatRepository: ChatGroupRepository) {}
 
-  async create(createChatDto: CreateChatDto, userId: string) {
-    return await this.chatRepository.createGroup(createChatDto._id, userId);
+  async createGroup(createChatDto: CreateChatDto, userId: string) {
+    return await this.chatRepository.createGroup(createChatDto, userId);
   }
 
   findAll(userId: string) {

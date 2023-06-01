@@ -17,7 +17,7 @@ export class LaptopPost {
   @Prop({ type: String, required: true })
   microProcessor: string;
 
-  @Prop({ type: String, enum: ['Mới', 'Đã sử dụng'], required: true })
+  @Prop({ type: String, required: true })
   statusLaptop: string;
 
   @Prop({ type: String, required: true })

@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { IChatGroupRepository } from './interface.chat.repository';
 import { Group } from '../schema/group.schema';
 import { Message } from '../schema/message.schema';
-import { CreateMessageDto } from '../dto/create-chat.dto';
+import { CreateChatDto, CreateMessageDto } from '../dto/create-chat.dto';
 
 @Injectable()
 export class ChatGroupRepository implements IChatGroupRepository {
@@ -18,19 +18,11 @@ export class ChatGroupRepository implements IChatGroupRepository {
     createChatDto: CreateMessageDto,
     userId: string,
   ): Promise<Message> {
-    console.log(
-      '🚀 ~ file: chat.repository.ts:21 ~ ChatGroupRepository ~ userId:',
-      userId,
-    );
     try {
       const message = await this.chatMessageModel.create({
         ...createChatDto,
         userId: userId,
       });
-      console.log(
-        '🚀 ~ file: chat.repository.ts:30 ~ ChatGroupRepository ~ message:',
-        message,
-      );
 
       return await message.save();
     } catch (error) {
@@ -48,7 +40,10 @@ export class ChatGroupRepository implements IChatGroupRepository {
           groupId,
         })
         .sort({ createdAt: 'asc' })
-        .populate('userId')
+        .populate({
+          path: 'userId',
+          select: '-__v -password',
+        })
         .exec();
 
       return messages;
@@ -72,6 +67,7 @@ export class ChatGroupRepository implements IChatGroupRepository {
         })
         .populate('sellerId')
         .populate('buyerId')
+        .populate('postId')
         .exec();
 
       return groupFind;
@@ -79,11 +75,14 @@ export class ChatGroupRepository implements IChatGroupRepository {
       throw new Error(error);
     }
   }
-  async createGroup(_id: string, userId: string): Promise<Group> {
+  async createGroup(
+    createChatDto: CreateChatDto,
+    userId: string,
+  ): Promise<Group> {
     try {
       const groupFind = await this.chatGroupModel.findOne({
         buyerId: userId,
-        sellerId: _id,
+        ...createChatDto,
       });
 
       if (groupFind) {
@@ -92,7 +91,7 @@ export class ChatGroupRepository implements IChatGroupRepository {
 
       const group = new this.chatGroupModel({
         buyerId: userId,
-        sellerId: _id,
+        ...createChatDto,
       });
 
       return await group.save();

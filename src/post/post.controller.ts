@@ -10,6 +10,7 @@ import {
   UseInterceptors,
   UploadedFiles,
   Request,
+  Query,
 } from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -18,6 +19,7 @@ import { WebSocketServer } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { FilesInterceptor } from '@nestjs/platform-express';
+import { TCategoryValue } from './types';
 
 @Controller('post')
 export class PostController {
@@ -25,6 +27,15 @@ export class PostController {
   server: Server;
 
   constructor(private readonly postService: PostService) {}
+
+  @Get('search')
+  async search(@Query('keyword') keyword: string) {
+    try {
+      return await this.postService.search(keyword);
+    } catch (error) {
+      throw new BadRequestException('Something bad happened', error.message);
+    }
+  }
 
   @UseGuards(AuthGuard)
   @Post()
@@ -43,18 +54,28 @@ export class PostController {
 
   @UseGuards(AuthGuard)
   @Get('user')
-  async findAll(@Request() req) {
+  async userFindAll(@Request() req, @Query('status') status: string) {
     try {
-      return await this.postService.userFindAll(req.user);
+      return await this.postService.userFindAll(req.user.id, status);
+    } catch (error) {
+      throw new BadRequestException('Something bad happened', error.message);
+    }
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('admin')
+  async adminFindAll() {
+    try {
+      return await this.postService.adminFindAll();
     } catch (error) {
       throw new BadRequestException('Something bad happened', error.message);
     }
   }
 
   @Get()
-  async userFindAll() {
+  async customerFindAll(@Query('name') category?: TCategoryValue) {
     try {
-      return await this.postService.findAll();
+      return await this.postService.customerFindAll(category);
     } catch (error) {
       throw new BadRequestException('Something bad happened', error.message);
     }

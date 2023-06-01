@@ -17,7 +17,11 @@ export class Post {
   @Prop({ type: [String], default: null })
   imagePath: string[];
 
-  @Prop({ type: String, enum: ['hide', 'show'], default: 'hide' })
+  @Prop({
+    type: String,
+    enum: ['hide', 'show', 'expired', 'denined'],
+    default: 'hide',
+  })
   status: string;
 
   @Prop({
@@ -131,9 +135,10 @@ export class Post {
   @Prop({
     type: SchemaTypes.Types.ObjectId,
     ref: 'User',
-    required: true,
   })
   userId: string;
 }
 
-export const PostSchema = SchemaFactory.createForClass(Post);
+const PostSchema = SchemaFactory.createForClass(Post);
+PostSchema.index({ title: 'text', content: 'text' });
+export { PostSchema };

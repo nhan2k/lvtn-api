@@ -20,8 +20,8 @@ export class ChatController {
 
   @UseGuards(AuthGuard)
   @Post()
-  async create(@Body() createChatDto: CreateChatDto, @Request() req: any) {
-    return await this.chatService.create(createChatDto, req.user.id);
+  async createGroup(@Body() createChatDto: CreateChatDto, @Request() req: any) {
+    return await this.chatService.createGroup(createChatDto, req.user.id);
   }
 
   @UseGuards(AuthGuard)

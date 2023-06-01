@@ -20,7 +20,7 @@ export class ElectricBicyclePost {
   @Prop({ type: String, required: true })
   engine: string;
 
-  @Prop({ type: String, enum: ['Mới', 'Đã sử dụng'], required: true })
+  @Prop({ type: String, required: true })
   statusElectricBicycle: string;
 
   @Prop({ type: String, required: true })

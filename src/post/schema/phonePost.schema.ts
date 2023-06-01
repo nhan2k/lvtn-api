@@ -14,7 +14,7 @@ export class PhonePost {
   @Prop({ type: String, required: true })
   brand: string;
 
-  @Prop({ type: String, enum: ['Mới', 'Đã sử dụng'], required: true })
+  @Prop({ type: String, required: true })
   statusPhone: string;
 
   @Prop({ type: String, required: true })

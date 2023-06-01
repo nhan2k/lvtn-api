@@ -16,6 +16,12 @@ export class Group {
     ref: 'User',
   })
   sellerId: string;
+
+  @Prop({
+    type: SchemaTypes.Types.ObjectId,
+    ref: 'Post',
+  })
+  postId: string;
 }
 
 export const GroupSchema = SchemaFactory.createForClass(Group);

@@ -17,6 +17,7 @@ import { MotorbikePost } from '../schema/motorbikePost.schema';
 import { OfficePost } from '../schema/officePost.schema';
 import { PhonePost } from '../schema/phonePost.schema';
 import { v2 as cloudinary } from 'cloudinary';
+import { TCategoryValue } from '../types';
 
 @Injectable()
 export class PostRepository implements IPostRepository {
@@ -49,23 +50,170 @@ export class PostRepository implements IPostRepository {
       api_secret: 'x64161wJ9l6PUG9yAaiu47-yuCU',
     });
   }
-
-  async findAll(): Promise<Post[]> {
+  search(keyword: string): Promise<Post[]> {
     try {
-      return await this.postModel
-        .find({
-          status: 'show',
-          isReview: true,
-        })
+      return this.postModel
+        .find(
+          {
+            $text: { $search: keyword },
+            status: 'show',
+            isReview: true,
+          },
+          { score: { $meta: 'textScore' } }, // Optional: Include textScore for relevance sorting
+        )
+        .sort({ score: { $meta: 'textScore' } }) // Optional: Sort by relevance score
         .exec();
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  async customerFindAll(categoryName?: TCategoryValue): Promise<Post[]> {
+    try {
+      switch (categoryName) {
+        case 'Chung cư':
+          return await this.postModel
+            .find({
+              status: 'show',
+              isReview: true,
+              categoryName,
+            })
+            .populate({
+              path: 'apartmentPostId',
+            })
+            .exec();
+        case 'Xe hơi':
+          return await this.postModel
+            .find({
+              status: 'show',
+              isReview: true,
+              categoryName,
+            })
+            .populate({
+              path: 'carPostId',
+            })
+            .exec();
+        case 'Đất':
+          return await this.postModel
+            .find({
+              status: 'show',
+              isReview: true,
+              categoryName,
+            })
+            .populate({
+              path: 'groundPostId',
+            })
+            .exec();
+        case 'Nhà ở':
+          return await this.postModel
+            .find({
+              status: 'show',
+              isReview: true,
+              categoryName,
+            })
+            .populate({
+              path: 'housePostId',
+            })
+            .exec();
+        case 'Laptop':
+          return await this.postModel
+            .find({
+              status: 'show',
+              isReview: true,
+              categoryName,
+            })
+            .populate({
+              path: 'laptopPostId',
+            })
+            .exec();
+        case 'Phòng trọ':
+          return await this.postModel
+            .find({
+              status: 'show',
+              isReview: true,
+              categoryName,
+            })
+            .populate({
+              path: 'motelRoomPostId',
+            })
+            .exec();
+        case 'Văn phòng':
+          return await this.postModel
+            .find({
+              status: 'show',
+              isReview: true,
+              categoryName,
+            })
+            .populate({
+              path: 'officePostId',
+            })
+            .exec();
+        case 'Xe máy':
+          return await this.postModel
+            .find({
+              status: 'show',
+              isReview: true,
+              categoryName,
+            })
+            .populate({
+              path: 'motorbikePostId',
+            })
+            .exec();
+        case 'Xe điện':
+          return await this.postModel
+            .find({
+              status: 'show',
+              isReview: true,
+              categoryName,
+            })
+            .populate({
+              path: 'electricBicyclePostId',
+            })
+            .exec();
+        case 'Điện thoại':
+          return await this.postModel
+            .find({
+              status: 'show',
+              isReview: true,
+              categoryName,
+            })
+            .populate({
+              path: 'phonePostId',
+            })
+            .exec();
+        default:
+          return await this.postModel
+            .find({
+              status: 'show',
+              isReview: true,
+            })
+            .exec();
+      }
     } catch (error) {
       throw new Error(error.message);
     }
   }
 
-  async userFindAll(user: any): Promise<Post[]> {
+  async adminFindAll(): Promise<Post[]> {
     try {
       return await this.postModel.find().exec();
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async userFindAll(userId: string, status: string): Promise<Post[]> {
+    try {
+      return await this.postModel
+        .find({
+          userId,
+          status,
+        })
+        .populate({
+          path: 'userId',
+          select: '-__v -password',
+        })
+        .exec();
     } catch (error) {
       throw new Error(error.message);
     }
@@ -82,17 +230,50 @@ export class PostRepository implements IPostRepository {
     try {
       return await this.postModel
         .findById(id)
-        .populate('apartmentPostId')
-        .populate('carPostId')
-        .populate('housePostId')
-        .populate('groundPostId')
-        .populate('motorbikePostId')
-        .populate('officePostId')
-        .populate('phonePostId')
-        .populate('electricBicyclePostId')
-        .populate('motelRoomPostId')
-        .populate('laptopPostId')
-        .populate('userId')
+        .populate({
+          path: 'apartmentPostId',
+          select: '-_id -__v',
+        })
+        .populate({
+          path: 'carPostId',
+          select: '-_id -__v',
+        })
+        .populate({
+          path: 'housePostId',
+          select: '-_id -__v',
+        })
+        .populate({
+          path: 'groundPostId',
+          select: '-_id -__v',
+        })
+        .populate({
+          path: 'motorbikePostId',
+          select: '-_id -__v',
+        })
+        .populate({
+          path: 'officePostId',
+          select: '-_id -__v',
+        })
+        .populate({
+          path: 'phonePostId',
+          select: '-_id -__v',
+        })
+        .populate({
+          path: 'electricBicyclePostId',
+          select: '-_id -__v',
+        })
+        .populate({
+          path: 'motelRoomPostId',
+          select: '-_id -__v',
+        })
+        .populate({
+          path: 'laptopPostId',
+          select: '-_id -__v',
+        })
+        .populate({
+          path: 'userId',
+          select: '-__v -password',
+        })
         .exec();
     } catch (error) {
       throw new Error(error.message);
@@ -104,7 +285,8 @@ export class PostRepository implements IPostRepository {
     userId: string,
   ): Promise<Post> {
     try {
-      const { title, content, totalPrice, ...rest } = createPostDto;
+      const { title, content, totalPrice, categoryName, ...rest } =
+        createPostDto;
 
       const imgPaths = [];
       const options = {
@@ -112,19 +294,22 @@ export class PostRepository implements IPostRepository {
         unique_filename: false,
         overwrite: true,
       };
-      files.map(async (file) => {
+      const uploadPromises = files.map(async (file) => {
         const result = await cloudinary.uploader.upload(file?.path, options);
         if (result.public_id) {
           imgPaths.push(result.public_id);
         }
       });
 
+      await Promise.all(uploadPromises);
+
       const createdPost = new this.postModel({
         title,
         content,
         totalPrice,
+        categoryName,
         expiredAt: moment(new Date()).add(60, 'days'),
-        imagePath: imgPaths || ['asd', 'asd'],
+        imagePath: imgPaths,
         userId: userId,
       });
       switch (createPostDto.categoryName) {

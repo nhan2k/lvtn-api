@@ -23,7 +23,7 @@ export class MotorbikePost {
   @Prop({ type: String, required: true })
   capacity: string;
 
-  @Prop({ type: String, enum: ['Mới', 'Đã sử dụng'], required: true })
+  @Prop({ type: String, required: true })
   statusMotorbike: string;
 
   @Prop({ type: Number, required: true })

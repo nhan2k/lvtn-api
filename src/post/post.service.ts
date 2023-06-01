@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostRepository } from './repository/post.repository';
+import { TCategoryValue } from './types';
 
 @Injectable()
 export class PostService {
@@ -15,17 +16,24 @@ export class PostService {
     }
   }
 
-  async findAll() {
+  async customerFindAll(category?: TCategoryValue) {
     try {
-      return await this.postRepository.findAll();
+      return await this.postRepository.customerFindAll(category);
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+  async adminFindAll() {
+    try {
+      return await this.postRepository.adminFindAll();
     } catch (error) {
       throw new Error(error.message);
     }
   }
 
-  async userFindAll(user: any) {
+  async userFindAll(userId: string, status: string) {
     try {
-      return await this.postRepository.userFindAll(user);
+      return await this.postRepository.userFindAll(userId, status);
     } catch (error) {
       throw new Error(error.message);
     }
@@ -50,6 +58,14 @@ export class PostService {
   async update(id: string, updatePostDto: UpdatePostDto) {
     try {
       return await this.postRepository.update(id, updatePostDto);
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async search(keyword: string) {
+    try {
+      return await this.postRepository.search(keyword);
     } catch (error) {
       throw new Error(error.message);
     }

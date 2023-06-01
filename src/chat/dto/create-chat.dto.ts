@@ -1,5 +1,6 @@
 export class CreateChatDto {
-  _id: string;
+  postId: string;
+  sellerId: string;
 }
 
 export class CreateMessageDto {
