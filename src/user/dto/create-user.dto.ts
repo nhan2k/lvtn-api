@@ -4,4 +4,6 @@ export class CreateUserDto {
   phoneNumber: string;
   address: string;
   password: string;
+
+  numberOfposts: number;
 }

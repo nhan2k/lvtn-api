@@ -18,6 +18,7 @@ import { OfficePost } from '../schema/officePost.schema';
 import { PhonePost } from '../schema/phonePost.schema';
 import { v2 as cloudinary } from 'cloudinary';
 import { TCategoryValue } from '../types';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class PostRepository implements IPostRepository {
@@ -43,6 +44,8 @@ export class PostRepository implements IPostRepository {
     private readonly officePostModel: Model<OfficePost>,
     @InjectModel(PhonePost.name)
     private readonly phonePostModel: Model<PhonePost>,
+
+    private readonly userService: UserService,
   ) {
     cloudinary.config({
       cloud_name: 'dtf3ihaqs',
@@ -324,6 +327,11 @@ export class PostRepository implements IPostRepository {
         imagePath: imgPaths,
         userId: userId,
       });
+      const user = await this.userService.findOne(userId);
+      await this.userService.update(userId, {
+        numberOfposts: user.numberOfposts++,
+      });
+
       switch (createPostDto.categoryName) {
         case 'Chung cư':
           const apartmentPost = new this.apartmentPostModel({

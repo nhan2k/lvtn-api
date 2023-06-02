@@ -29,6 +29,8 @@ import { PhonePost, PhonePostSchema } from './schema/phonePost.schema';
 import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { UserModule } from 'src/user/user.module';
+import { UserService } from 'src/user/user.service';
 
 @Module({
   imports: [
@@ -60,6 +62,7 @@ import { extname } from 'path';
         },
       }),
     }),
+    UserModule,
   ],
   controllers: [PostController],
   providers: [PostService, PostRepository],
