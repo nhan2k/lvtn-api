@@ -19,9 +19,13 @@ import { PhonePost } from '../schema/phonePost.schema';
 import { v2 as cloudinary } from 'cloudinary';
 import { TCategoryValue } from '../types';
 import { UserService } from 'src/user/user.service';
+import { Server } from 'socket.io';
+import { WebSocketServer } from '@nestjs/websockets';
 
 @Injectable()
 export class PostRepository implements IPostRepository {
+  @WebSocketServer()
+  server: Server;
   constructor(
     @InjectModel(Post.name) private readonly postModel: Model<Post>,
     @InjectModel(ApartmentPost.name)
@@ -309,14 +313,14 @@ export class PostRepository implements IPostRepository {
         unique_filename: false,
         overwrite: true,
       };
-      const uploadPromises = files.map(async (file) => {
-        const result = await cloudinary.uploader.upload(file?.path, options);
-        if (result.public_id) {
-          imgPaths.push(result.public_id);
-        }
-      });
+      // const uploadPromises = files.map(async (file) => {
+      //   const result = await cloudinary.uploader.upload(file?.path, options);
+      //   if (result.public_id) {
+      //     imgPaths.push(result.public_id);
+      //   }
+      // });
 
-      await Promise.all(uploadPromises);
+      // await Promise.all(uploadPromises);
 
       const createdPost = new this.postModel({
         title,
@@ -331,7 +335,7 @@ export class PostRepository implements IPostRepository {
       await this.userService.update(userId, {
         numberOfposts: user.numberOfposts++,
       });
-
+      this.server.emit('receivedPostApproved', createdPost);
       switch (createPostDto.categoryName) {
         case 'Chung cư':
           const apartmentPost = new this.apartmentPostModel({
@@ -429,9 +433,24 @@ export class PostRepository implements IPostRepository {
   }
   async update(id: string, updatePostDto: UpdatePostDto): Promise<Post> {
     try {
-      return await this.postModel
+      const postUpdate = await this.postModel
         .findByIdAndUpdate(id, updatePostDto, { new: true })
+        .populate({
+          path: 'userId',
+          select: '-_iv -__v',
+        })
         .exec();
+      console.log(
+        '🚀 ~ file: post.repository.ts:443 ~ PostRepository ~ update ~ postUpdate:',
+        postUpdate,
+      );
+      if (updatePostDto.isAdmin) {
+        this.server
+          .in((postUpdate.userId as any).email)
+          .emit('receivedPostApprove', postUpdate);
+      }
+
+      return postUpdate;
     } catch (error) {
       throw new Error(error.message);
     }

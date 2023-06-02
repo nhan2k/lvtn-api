@@ -4,6 +4,7 @@ export class CreatePostDto {
   title: string;
   content: number;
   totalPrice: number;
+  status?: string;
 
   categoryName: TCategoryValue;
   type: string;
@@ -51,4 +52,6 @@ export class CreatePostDto {
   typeMotorbike: string;
   typeOffice: string;
   statusPhone: string;
+
+  isAdmin?: boolean;
 }

@@ -30,6 +30,12 @@ export class Post {
   })
   isReview: boolean;
 
+  @Prop({
+    type: Boolean,
+    default: false,
+  })
+  isSeen: boolean;
+
   @Prop({ type: Number, required: true })
   totalPrice: number;
 

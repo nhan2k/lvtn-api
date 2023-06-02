@@ -10,7 +10,7 @@ import {
   Request,
 } from '@nestjs/common';
 import { ChatService } from './chat.service';
-import { CreateChatDto, CreateMessageDto } from './dto/create-chat.dto';
+import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 
