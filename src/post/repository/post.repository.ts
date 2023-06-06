@@ -56,42 +56,14 @@ export class PostRepository implements IPostRepository {
   async search(filter: any): Promise<Post[]> {
     try {
       const searchRegex = new RegExp(filter?.keyword, 'i');
-      const conditions = [
-        { title: { $regex: searchRegex } },
-        {
-          $or: [
-            { 'apartmentPostId.address.province': filter?.province },
-            { 'apartmentPostId.address.district': filter?.district },
-            { 'carPostId.address.province': filter?.province },
-            { 'carPostId.address.district': filter?.district },
-            { 'housePostId.address.province': filter?.province },
-            { 'housePostId.address.district': filter?.district },
-            // Add more conditions for other schema fields if needed
-            { 'groundPostId.address.province': filter?.province },
-            { 'groundPostId.address.district': filter?.district },
-            { 'motorbikePostId.address.province': filter?.province },
-            { 'motorbikePostId.address.district': filter?.district },
-            { 'officePostId.address.province': filter?.province },
-            { 'officePostId.address.district': filter?.district },
-            { 'phonePostId.address.province': filter?.province },
-            { 'phonePostId.address.district': filter?.district },
-            { 'electricBicyclePostId.address.province': filter?.province },
-            { 'electricBicyclePostId.address.district': filter?.district },
-            { 'motelRoomPostId.address.province': filter?.province },
-            { 'motelRoomPostId.address.district': filter?.district },
-            { 'laptopPostId.address.province': filter?.province },
-            { 'laptopPostId.address.district': filter?.district },
-          ],
-        },
-      ];
-      console.log(
-        '🚀 ~ file: post.repository.ts:87 ~ PostRepository ~ search ~ conditions:',
-        JSON.stringify(conditions),
-      );
-      const query: FilterQuery<Post> = { $and: conditions };
+      const conditions = [{ title: { $regex: searchRegex } }];
+
+      const query: FilterQuery<Post> = { $or: conditions };
 
       const response = await this.postModel
-        .find(query)
+        .find({
+          title: { $regex: searchRegex },
+        })
         .select(
           '-status -createdAt -__v -expiredAt -deletedAt -categoryName -isReview -isSeen',
         )
@@ -135,6 +107,7 @@ export class PostRepository implements IPostRepository {
           path: 'laptopPostId',
           select: 'address',
         })
+
         .exec();
 
       return response;

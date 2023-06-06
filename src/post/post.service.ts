@@ -16,9 +16,35 @@ export class PostService {
     }
   }
 
-  async customerFindAll(category?: TCategoryValue) {
+  async customerFindAll(filter: {
+    name?: TCategoryValue;
+    province?: string;
+    district?: string;
+  }) {
     try {
-      return await this.postRepository.customerFindAll(category);
+      const response = await this.postRepository.customerFindAll(filter.name);
+      if (filter.district) {
+        return response.filter((res) => {
+          for (const key in res) {
+            if (key.includes('PostId') && res[key]) {
+              return (
+                res[key]?.address?.province === filter?.province &&
+                res[key]?.address?.district === filter?.district
+              );
+            }
+          }
+        });
+      }
+      if (filter.province) {
+        return response.filter((res) => {
+          for (const key in res) {
+            if (key.includes('PostId') && res[key]) {
+              return res[key]?.address?.province === filter?.province;
+            }
+          }
+        });
+      }
+      return response;
     } catch (error) {
       throw new Error(error.message);
     }
@@ -73,7 +99,29 @@ export class PostService {
 
   async search(filter: any) {
     try {
-      return await this.postRepository.search(filter);
+      const response = await this.postRepository.search(filter);
+      if (filter.district) {
+        return response.filter((res) => {
+          for (const key in res) {
+            if (key.includes('PostId') && res[key]) {
+              return (
+                res[key].address.province === filter.province &&
+                res[key].address.district === filter.district
+              );
+            }
+          }
+        });
+      }
+      if (filter.province) {
+        return response.filter((res) => {
+          for (const key in res) {
+            if (key.includes('PostId') && res[key]) {
+              return res[key].address.province === filter.province;
+            }
+          }
+        });
+      }
+      return response;
     } catch (error) {
       throw new Error(error.message);
     }

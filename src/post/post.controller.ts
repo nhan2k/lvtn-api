@@ -83,9 +83,16 @@ export class PostController {
   }
 
   @Get()
-  async customerFindAll(@Query('name') category?: TCategoryValue) {
+  async customerFindAll(
+    @Query()
+    filter: {
+      name?: TCategoryValue;
+      province?: string;
+      district?: string;
+    },
+  ) {
     try {
-      return await this.postService.customerFindAll(category);
+      return await this.postService.customerFindAll(filter);
     } catch (error) {
       throw new BadRequestException('Something bad happened', error.message);
     }
