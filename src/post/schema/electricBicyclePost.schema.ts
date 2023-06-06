@@ -25,6 +25,9 @@ export class ElectricBicyclePost {
 
   @Prop({ type: String, required: true })
   guarantee: string;
+
+  @Prop({ type: Object, required: true })
+  address: object;
 }
 
 export const ElectricBicyclePostSchema =

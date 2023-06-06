@@ -8,9 +8,6 @@ export class LaptopPost {
   @Prop({ type: String, enum: ['Laptop'], default: 'Laptop' })
   typePost: string;
 
-  @Prop({ type: String, enum: ['Cần bán', 'Cho thuê'], required: true })
-  type: string;
-
   @Prop({ type: String, required: true })
   brand: string;
 
@@ -31,6 +28,9 @@ export class LaptopPost {
 
   @Prop({ type: Object, required: true })
   guarantee: object;
+
+  @Prop({ type: Object, required: true })
+  address: object;
 }
 
 export const LaptopPostSchema = SchemaFactory.createForClass(LaptopPost);

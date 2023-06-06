@@ -39,6 +39,14 @@ export class PostService {
     }
   }
 
+  async userFindAllPostUnSeen(userId: string) {
+    try {
+      return await this.postRepository.userFindAllPostUnSeen(userId);
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
   async count() {
     try {
       return await this.postRepository.count();
@@ -63,9 +71,9 @@ export class PostService {
     }
   }
 
-  async search(keyword: string) {
+  async search(filter: any) {
     try {
-      return await this.postRepository.search(keyword);
+      return await this.postRepository.search(filter);
     } catch (error) {
       throw new Error(error.message);
     }

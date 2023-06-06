@@ -11,6 +11,7 @@ export interface IUserRepository {
     refresh_token: string;
     role: string;
     email: string;
+    _id: string;
   }>;
   update(id: string, updateUserDto: UpdateUserDto): Promise<User>;
 }

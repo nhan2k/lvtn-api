@@ -29,9 +29,9 @@ export class PostController {
   constructor(private readonly postService: PostService) {}
 
   @Get('search')
-  async search(@Query('keyword') keyword: string) {
+  async search(@Query() filter: any) {
     try {
-      return await this.postService.search(keyword);
+      return await this.postService.search(filter);
     } catch (error) {
       throw new BadRequestException('Something bad happened', error.message);
     }
@@ -57,6 +57,16 @@ export class PostController {
   async userFindAll(@Request() req, @Query('status') status: string) {
     try {
       return await this.postService.userFindAll(req.user.id, status);
+    } catch (error) {
+      throw new BadRequestException('Something bad happened', error.message);
+    }
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('unseen')
+  async userFindAllPostUnSeen(@Request() req) {
+    try {
+      return await this.postService.userFindAllPostUnSeen(req.user.id);
     } catch (error) {
       throw new BadRequestException('Something bad happened', error.message);
     }

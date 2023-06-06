@@ -34,6 +34,9 @@ export class CarPost {
 
   @Prop({ type: Number, required: true })
   numberOfKM: number;
+
+  @Prop({ type: Object, required: true })
+  address: object;
 }
 
 export const CarPostSchema = SchemaFactory.createForClass(CarPost);

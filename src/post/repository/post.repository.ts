@@ -4,7 +4,7 @@ import { CreatePostDto } from '../dto/create-post.dto';
 import { UpdatePostDto } from '../dto/update-post.dto';
 import { Post } from '../schema/post.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { FilterQuery, Model, Types } from 'mongoose';
 import { ApartmentPost } from '../schema/apartmentPost.schema';
 import * as moment from 'moment';
 import { CarPost } from '../schema/carPost.schema';
@@ -19,13 +19,9 @@ import { PhonePost } from '../schema/phonePost.schema';
 import { v2 as cloudinary } from 'cloudinary';
 import { TCategoryValue } from '../types';
 import { UserService } from 'src/user/user.service';
-import { Server } from 'socket.io';
-import { WebSocketServer } from '@nestjs/websockets';
 
 @Injectable()
 export class PostRepository implements IPostRepository {
-  @WebSocketServer()
-  server: Server;
   constructor(
     @InjectModel(Post.name) private readonly postModel: Model<Post>,
     @InjectModel(ApartmentPost.name)
@@ -57,19 +53,91 @@ export class PostRepository implements IPostRepository {
       api_secret: 'x64161wJ9l6PUG9yAaiu47-yuCU',
     });
   }
-  search(keyword: string): Promise<Post[]> {
+  async search(filter: any): Promise<Post[]> {
     try {
-      return this.postModel
-        .find(
-          {
-            $text: { $search: keyword },
-            status: 'show',
-            isReview: true,
-          },
-          { score: { $meta: 'textScore' } }, // Optional: Include textScore for relevance sorting
+      const searchRegex = new RegExp(filter?.keyword, 'i');
+      const conditions = [
+        { title: { $regex: searchRegex } },
+        {
+          $or: [
+            { 'apartmentPostId.address.province': filter?.province },
+            { 'apartmentPostId.address.district': filter?.district },
+            { 'carPostId.address.province': filter?.province },
+            { 'carPostId.address.district': filter?.district },
+            { 'housePostId.address.province': filter?.province },
+            { 'housePostId.address.district': filter?.district },
+            // Add more conditions for other schema fields if needed
+            { 'groundPostId.address.province': filter?.province },
+            { 'groundPostId.address.district': filter?.district },
+            { 'motorbikePostId.address.province': filter?.province },
+            { 'motorbikePostId.address.district': filter?.district },
+            { 'officePostId.address.province': filter?.province },
+            { 'officePostId.address.district': filter?.district },
+            { 'phonePostId.address.province': filter?.province },
+            { 'phonePostId.address.district': filter?.district },
+            { 'electricBicyclePostId.address.province': filter?.province },
+            { 'electricBicyclePostId.address.district': filter?.district },
+            { 'motelRoomPostId.address.province': filter?.province },
+            { 'motelRoomPostId.address.district': filter?.district },
+            { 'laptopPostId.address.province': filter?.province },
+            { 'laptopPostId.address.district': filter?.district },
+          ],
+        },
+      ];
+      console.log(
+        '🚀 ~ file: post.repository.ts:87 ~ PostRepository ~ search ~ conditions:',
+        JSON.stringify(conditions),
+      );
+      const query: FilterQuery<Post> = { $and: conditions };
+
+      const response = await this.postModel
+        .find(query)
+        .select(
+          '-status -createdAt -__v -expiredAt -deletedAt -categoryName -isReview -isSeen',
         )
-        .sort({ score: { $meta: 'textScore' } }) // Optional: Sort by relevance score
+        .populate({
+          path: 'apartmentPostId',
+          select: 'address',
+        })
+        .populate({
+          path: 'carPostId',
+          select: 'address',
+        })
+        .populate({
+          path: 'housePostId',
+          select: 'address',
+        })
+        .populate({
+          path: 'groundPostId',
+          select: 'address',
+        })
+        .populate({
+          path: 'motorbikePostId',
+          select: 'address',
+        })
+        .populate({
+          path: 'officePostId',
+          select: 'address',
+        })
+        .populate({
+          path: 'phonePostId',
+          select: 'address',
+        })
+        .populate({
+          path: 'electricBicyclePostId',
+          select: 'address',
+        })
+        .populate({
+          path: 'motelRoomPostId',
+          select: 'address',
+        })
+        .populate({
+          path: 'laptopPostId',
+          select: 'address',
+        })
         .exec();
+
+      return response;
     } catch (error) {
       throw new Error(error);
     }
@@ -238,6 +306,21 @@ export class PostRepository implements IPostRepository {
     }
   }
 
+  async userFindAllPostUnSeen(userId: string): Promise<Post[]> {
+    try {
+      return await this.postModel
+        .find({
+          userId,
+          isSeen: false,
+          isReview: true,
+        })
+        .sort({ updatedAt: 'desc' })
+        .exec();
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
   async count(): Promise<number> {
     try {
       return await this.postModel.count().exec();
@@ -304,7 +387,7 @@ export class PostRepository implements IPostRepository {
     userId: string,
   ): Promise<Post> {
     try {
-      const { title, content, totalPrice, categoryName, ...rest } =
+      const { title, content, totalPrice, categoryName, address, ...rest } =
         createPostDto;
 
       const imgPaths = [];
@@ -313,14 +396,14 @@ export class PostRepository implements IPostRepository {
         unique_filename: false,
         overwrite: true,
       };
-      // const uploadPromises = files.map(async (file) => {
-      //   const result = await cloudinary.uploader.upload(file?.path, options);
-      //   if (result.public_id) {
-      //     imgPaths.push(result.public_id);
-      //   }
-      // });
+      const uploadPromises = files.map(async (file) => {
+        const result = await cloudinary.uploader.upload(file?.path, options);
+        if (result.public_id) {
+          imgPaths.push(result.public_id);
+        }
+      });
 
-      // await Promise.all(uploadPromises);
+      await Promise.all(uploadPromises);
 
       const createdPost = new this.postModel({
         title,
@@ -335,11 +418,11 @@ export class PostRepository implements IPostRepository {
       await this.userService.update(userId, {
         numberOfposts: user.numberOfposts++,
       });
-      this.server.emit('receivedPostApproved', createdPost);
       switch (createPostDto.categoryName) {
         case 'Chung cư':
           const apartmentPost = new this.apartmentPostModel({
             ...rest,
+            address: JSON.parse(address),
           });
           const apartment = await apartmentPost.save();
           createdPost.apartmentPostId = apartment._id.toString();
@@ -348,6 +431,7 @@ export class PostRepository implements IPostRepository {
         case 'Xe hơi':
           const carPost = new this.carPostModel({
             ...rest,
+            address: user.address,
           });
           const car = await carPost.save();
 
@@ -358,6 +442,7 @@ export class PostRepository implements IPostRepository {
           const groundPost = new this.groundPostModel({
             ...rest,
             area: rest?.width * rest?.height,
+            address: JSON.parse(address),
           });
           const ground = await groundPost.save();
 
@@ -367,6 +452,7 @@ export class PostRepository implements IPostRepository {
           const housePost = new this.housePostModel({
             ...rest,
             area: rest?.width * rest?.height,
+            address: JSON.parse(address),
           });
           const house = await housePost.save();
 
@@ -376,6 +462,7 @@ export class PostRepository implements IPostRepository {
         case 'Laptop':
           const laptopPost = new this.laptopPostModel({
             ...rest,
+            address: user.address,
           });
           const laptop = await laptopPost.save();
 
@@ -392,6 +479,7 @@ export class PostRepository implements IPostRepository {
         case 'Văn phòng':
           const officePost = new this.officePostModel({
             ...rest,
+            address: JSON.parse(address),
           });
           const office = await officePost.save();
 
@@ -401,6 +489,7 @@ export class PostRepository implements IPostRepository {
         case 'Xe máy':
           const motorbikePost = new this.motorbikePostModel({
             ...rest,
+            address: user.address,
           });
           const motorbike = await motorbikePost.save();
 
@@ -410,6 +499,7 @@ export class PostRepository implements IPostRepository {
         case 'Xe điện':
           const electricBicyclePost = new this.electricBicyclePostModel({
             ...rest,
+            address: user.address,
           });
           const electricBicycle = await electricBicyclePost.save();
 
@@ -419,6 +509,7 @@ export class PostRepository implements IPostRepository {
         case 'Điện thoại':
           const phonePost = new this.phonePostModel({
             ...rest,
+            address: user.address,
           });
           const phone = await phonePost.save();
 
@@ -428,6 +519,10 @@ export class PostRepository implements IPostRepository {
           break;
       }
     } catch (error) {
+      console.log(
+        '🚀 ~ file: post.repository.ts:447 ~ PostRepository ~ error:',
+        error,
+      );
       throw new Error(error.message);
     }
   }
@@ -440,15 +535,6 @@ export class PostRepository implements IPostRepository {
           select: '-_iv -__v',
         })
         .exec();
-      console.log(
-        '🚀 ~ file: post.repository.ts:443 ~ PostRepository ~ update ~ postUpdate:',
-        postUpdate,
-      );
-      if (updatePostDto.isAdmin) {
-        this.server
-          .in((postUpdate.userId as any).email)
-          .emit('receivedPostApprove', postUpdate);
-      }
 
       return postUpdate;
     } catch (error) {

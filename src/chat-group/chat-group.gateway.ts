@@ -5,10 +5,12 @@ import {
   OnGatewayConnection,
   OnGatewayDisconnect,
   WebSocketServer,
+  ConnectedSocket,
 } from '@nestjs/websockets';
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
 import { ChatService } from 'src/chat/chat.service';
+import { PostService } from 'src/post/post.service';
 
 @WebSocketGateway({
   cors: {
@@ -24,12 +26,21 @@ export class ChatGroupGateway
   constructor(
     private readonly jwtService: JwtService,
     private readonly chatService: ChatService,
+    private readonly postService: PostService,
   ) {}
   handleConnection(client: any, ...args: any[]) {
     console.log(`Socket connected`);
   }
   handleDisconnect(client: any) {
     return;
+  }
+
+  @SubscribeMessage('createRoom')
+  async createRoom(
+    @MessageBody() data: string,
+    @ConnectedSocket() client: Socket,
+  ) {
+    await client.join(data);
   }
 
   @SubscribeMessage('sendMessage')
@@ -48,5 +59,13 @@ export class ChatGroupGateway
   @SubscribeMessage('sendNotify')
   async notify(@MessageBody() data: any): Promise<any> {
     this.server.emit('notifyReceive', data);
+  }
+
+  @SubscribeMessage('sendPostCreate')
+  async createPost(@MessageBody() data: any) {
+    console.log(
+      '🚀 ~ file: chat-group.gateway.ts:66 ~ createPost ~ data:',
+      data,
+    );
   }
 }

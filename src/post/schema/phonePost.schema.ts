@@ -8,9 +8,6 @@ export class PhonePost {
   @Prop({ type: String, enum: ['Điện thoại'], default: 'Điện thoại' })
   typePost: string;
 
-  @Prop({ type: String, enum: ['Cần bán', 'Cho thuê'], required: true })
-  type: string;
-
   @Prop({ type: String, required: true })
   brand: string;
 
@@ -21,10 +18,13 @@ export class PhonePost {
   color: string;
 
   @Prop({ type: String, required: true })
-  capacity: string;
+  ram: string;
 
   @Prop({ type: String, required: true })
   guarantee: string;
+
+  @Prop({ type: Object, required: true })
+  address: object;
 }
 
 export const PhonePostSchema = SchemaFactory.createForClass(PhonePost);

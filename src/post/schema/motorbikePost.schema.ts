@@ -31,6 +31,9 @@ export class MotorbikePost {
 
   @Prop({ type: String, required: true })
   origin: string;
+
+  @Prop({ type: Object, required: true })
+  address: object;
 }
 
 export const MotorbikePostSchema = SchemaFactory.createForClass(MotorbikePost);

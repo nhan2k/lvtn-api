@@ -30,7 +30,6 @@ import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { UserModule } from 'src/user/user.module';
-import { UserService } from 'src/user/user.service';
 
 @Module({
   imports: [
@@ -66,5 +65,6 @@ import { UserService } from 'src/user/user.service';
   ],
   controllers: [PostController],
   providers: [PostService, PostRepository],
+  exports: [PostService, PostModule],
 })
 export class PostModule {}

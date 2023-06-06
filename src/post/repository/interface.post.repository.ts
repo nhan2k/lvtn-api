@@ -16,4 +16,5 @@ export interface IPostRepository {
   userFindAll(userId: string, status: string): Promise<Post[]>;
   adminFindAll(userId: string): Promise<Post[]>;
   search(keyword: string): Promise<Post[]>;
+  userFindAllPostUnSeen(userId: string): Promise<Post[]>;
 }

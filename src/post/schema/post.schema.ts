@@ -25,6 +25,12 @@ export class Post {
   status: string;
 
   @Prop({
+    type: String,
+    allowNull: true,
+  })
+  reason: string;
+
+  @Prop({
     type: Boolean,
     default: false,
   })
@@ -146,5 +152,4 @@ export class Post {
 }
 
 const PostSchema = SchemaFactory.createForClass(Post);
-PostSchema.index({ title: 'text', content: 'text' });
 export { PostSchema };

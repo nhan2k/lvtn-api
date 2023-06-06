@@ -40,7 +40,7 @@ export class UserRepository implements IUserRepository {
   }
   async findOne(id: string): Promise<User> {
     try {
-      return await this.userModel.findById(id).exec();
+      return await this.userModel.findById(id).select('-password').exec();
     } catch (error) {
       throw new Error(error.message);
     }
@@ -50,6 +50,7 @@ export class UserRepository implements IUserRepository {
     refresh_token: string;
     role: string;
     email: string;
+    _id: string;
   }> {
     try {
       const user = await this.userModel.findOne({
@@ -74,6 +75,7 @@ export class UserRepository implements IUserRepository {
         }),
         role: user.role,
         email: user.email,
+        _id: user._id.toString(),
       };
     } catch (error) {
       throw new Error(error.message);

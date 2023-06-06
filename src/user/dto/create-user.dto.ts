@@ -6,4 +6,6 @@ export class CreateUserDto {
   password: string;
 
   numberOfposts: number;
+  province: string;
+  district: string;
 }
