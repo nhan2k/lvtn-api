@@ -23,6 +23,8 @@ export class ChatGroupGateway
   @WebSocketServer()
   server: Server;
 
+  groupId: string | null = null;
+
   constructor(
     private readonly jwtService: JwtService,
     private readonly chatService: ChatService,
@@ -37,10 +39,11 @@ export class ChatGroupGateway
 
   @SubscribeMessage('createRoom')
   async createRoom(
-    @MessageBody() data: string,
+    @MessageBody() groupId: string,
     @ConnectedSocket() client: Socket,
   ) {
-    await client.join(data);
+    this.groupId = groupId;
+    await client.join(groupId);
   }
 
   @SubscribeMessage('sendMessage')
@@ -53,7 +56,7 @@ export class ChatGroupGateway
       (decoded as any).id,
     );
 
-    return this.server.emit('receivedMessage', response);
+    return this.server.to(this.groupId).emit('receivedMessage', response);
   }
 
   @SubscribeMessage('sendNotify')

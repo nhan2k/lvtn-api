@@ -1,10 +1,23 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Query,
+  Redirect,
+  Req,
+  Request,
+  Res,
+} from '@nestjs/common';
 import { AppService } from './app.service';
 import * as fs from 'fs';
+import { EmailService } from './third-service-provider/mail.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService,
+    private readonly emailService: EmailService,
+  ) {}
 
   @Get()
   getHello(): string {
@@ -35,5 +48,14 @@ export class AppController {
           value: district.idProvince,
         };
       });
+  }
+
+  @Get('/sendmail')
+  async sendMail() {
+    this.emailService.sendEmail(
+      'nhanrooney112@gmail.com',
+      'subject',
+      'content',
+    );
   }
 }

@@ -11,6 +11,10 @@ import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { ChatModule } from './chat/chat.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { TaskModule } from './task/task.module';
+import { ThirdPartyModule } from './third-service-provider/third-service-provider.module';
+import { EmailService } from './third-service-provider/mail.service';
 
 @Module({
   imports: [
@@ -40,8 +44,11 @@ import { ChatModule } from './chat/chat.module';
     }),
 
     ChatModule,
+    ScheduleModule.forRoot(),
+    TaskModule,
+    ThirdPartyModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, EmailService],
 })
 export class AppModule {}

@@ -360,6 +360,14 @@ export class PostRepository implements IPostRepository {
     userId: string,
   ): Promise<Post> {
     try {
+      const user = await this.userService.findOne(userId);
+      if (user.numberOfposts > 5) {
+        throw new Error('Bạn đã đăng tối đa số tin trong tháng');
+      }
+      await this.userService.update(userId, {
+        numberOfposts: user.numberOfposts + 1,
+      });
+
       const { title, content, totalPrice, categoryName, address, ...rest } =
         createPostDto;
 
@@ -387,10 +395,7 @@ export class PostRepository implements IPostRepository {
         imagePath: imgPaths,
         userId: userId,
       });
-      const user = await this.userService.findOne(userId);
-      await this.userService.update(userId, {
-        numberOfposts: user.numberOfposts++,
-      });
+
       switch (createPostDto.categoryName) {
         case 'Chung cư':
           const apartmentPost = new this.apartmentPostModel({
@@ -492,10 +497,6 @@ export class PostRepository implements IPostRepository {
           break;
       }
     } catch (error) {
-      console.log(
-        '🚀 ~ file: post.repository.ts:447 ~ PostRepository ~ error:',
-        error,
-      );
       throw new Error(error.message);
     }
   }
@@ -518,6 +519,20 @@ export class PostRepository implements IPostRepository {
   async delete(id: string): Promise<Post> {
     try {
       return await this.postModel.findByIdAndDelete(id).exec();
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async findPostExpiredAndUpdate() {
+    try {
+      const currentDate = new Date();
+      return await this.postModel.updateMany(
+        {
+          expiredAt: { $lte: currentDate },
+        },
+        { $set: { status: 'expired' } },
+      );
     } catch (error) {
       throw new Error(error.message);
     }

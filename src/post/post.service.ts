@@ -126,4 +126,13 @@ export class PostService {
       throw new Error(error.message);
     }
   }
+
+  // Cron
+  public async findPostExpiredAndUpdate() {
+    try {
+      return await this.postRepository.findPostExpiredAndUpdate();
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
 }
