@@ -33,7 +33,10 @@ export class PostController {
     try {
       return await this.postService.search(filter);
     } catch (error) {
-      throw new BadRequestException('Something bad happened', error.message);
+      throw new BadRequestException(
+        'Something bad happened',
+        error.message
+      );
     }
   }
 
@@ -43,22 +46,40 @@ export class PostController {
   async create(
     @Body() createPostDto: CreatePostDto,
     @UploadedFiles() files,
-    @Request() req,
+    @Request() req
   ) {
     try {
-      return await this.postService.create(createPostDto, files, req.user.id);
+      return await this.postService.create(
+        createPostDto,
+        files,
+        req.user.id
+      );
     } catch (error) {
-      throw new BadRequestException('Something bad happened', error.message);
+      throw new BadRequestException(
+        'Something bad happened',
+        error.message
+      );
     }
   }
 
   @UseGuards(AuthGuard)
   @Get('user')
-  async userFindAll(@Request() req, @Query('status') status: string) {
+  async userFindAll(
+    @Query('status') status: string,
+    @Query('userId') userId: string,
+    @Query('isSelled') isSelled?: boolean
+  ) {
     try {
-      return await this.postService.userFindAll(req.user.id, status);
+      return await this.postService.userFindAll(
+        userId,
+        status,
+        isSelled
+      );
     } catch (error) {
-      throw new BadRequestException('Something bad happened', error.message);
+      throw new BadRequestException(
+        'Something bad happened',
+        error.message
+      );
     }
   }
 
@@ -66,9 +87,14 @@ export class PostController {
   @Get('unseen')
   async userFindAllPostUnSeen(@Request() req) {
     try {
-      return await this.postService.userFindAllPostUnSeen(req.user.id);
+      return await this.postService.userFindAllPostUnSeen(
+        req.user.id
+      );
     } catch (error) {
-      throw new BadRequestException('Something bad happened', error.message);
+      throw new BadRequestException(
+        'Something bad happened',
+        error.message
+      );
     }
   }
 
@@ -78,7 +104,10 @@ export class PostController {
     try {
       return await this.postService.adminFindAll();
     } catch (error) {
-      throw new BadRequestException('Something bad happened', error.message);
+      throw new BadRequestException(
+        'Something bad happened',
+        error.message
+      );
     }
   }
 
@@ -89,12 +118,15 @@ export class PostController {
       name?: TCategoryValue;
       province?: string;
       district?: string;
-    },
+    }
   ) {
     try {
       return await this.postService.customerFindAll(filter);
     } catch (error) {
-      throw new BadRequestException('Something bad happened', error.message);
+      throw new BadRequestException(
+        'Something bad happened',
+        error.message
+      );
     }
   }
 
@@ -104,7 +136,10 @@ export class PostController {
     try {
       return await this.postService.count();
     } catch (error) {
-      throw new BadRequestException('Something bad happened', error.message);
+      throw new BadRequestException(
+        'Something bad happened',
+        error.message
+      );
     }
   }
 
@@ -113,16 +148,46 @@ export class PostController {
     try {
       return await this.postService.findOne(id);
     } catch (error) {
-      throw new BadRequestException('Something bad happened', error.message);
+      throw new BadRequestException(
+        'Something bad happened',
+        error.message
+      );
     }
   }
 
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() updatePostDto: UpdatePostDto
+  ) {
     try {
       return await this.postService.update(id, updatePostDto);
     } catch (error) {
-      throw new BadRequestException('Something bad happened', error.message);
+      throw new BadRequestException(
+        'Something bad happened',
+        error.message
+      );
+    }
+  }
+
+  @UseGuards(AuthGuard)
+  @Patch('promote/:id')
+  async promote(
+    @Param('id') id: string,
+    @Body() updatePostDto: UpdatePostDto,
+    @Request() req
+  ) {
+    try {
+      return await this.postService.promote(
+        id,
+        updatePostDto,
+        req.user.id
+      );
+    } catch (error) {
+      throw new BadRequestException(
+        'Something bad happened',
+        error.message
+      );
     }
   }
 }

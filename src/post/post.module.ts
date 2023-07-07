@@ -13,9 +13,18 @@ import {
   ElectricBicyclePost,
   ElectricBicyclePostSchema,
 } from './schema/electricBicyclePost.schema';
-import { GroundPost, GroundPostSchema } from './schema/groundPost.schema';
-import { HousePost, HousePostSchema } from './schema/housePost.schema';
-import { LaptopPost, LaptopPostSchema } from './schema/laptopPost.schema';
+import {
+  GroundPost,
+  GroundPostSchema,
+} from './schema/groundPost.schema';
+import {
+  HousePost,
+  HousePostSchema,
+} from './schema/housePost.schema';
+import {
+  LaptopPost,
+  LaptopPostSchema,
+} from './schema/laptopPost.schema';
 import {
   MotelRoomPost,
   MotelRoomPostSchema,
@@ -24,12 +33,19 @@ import {
   MotorbikePost,
   MotorbikePostSchema,
 } from './schema/motorbikePost.schema';
-import { OfficePost, OfficePostSchema } from './schema/officePost.schema';
-import { PhonePost, PhonePostSchema } from './schema/phonePost.schema';
+import {
+  OfficePost,
+  OfficePostSchema,
+} from './schema/officePost.schema';
+import {
+  PhonePost,
+  PhonePostSchema,
+} from './schema/phonePost.schema';
 import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { UserModule } from 'src/user/user.module';
+import { EmailService } from 'src/third-service-provider/mail.service';
 
 @Module({
   imports: [
@@ -37,7 +53,10 @@ import { UserModule } from 'src/user/user.module';
       { name: Post.name, schema: PostSchema },
       { name: ApartmentPost.name, schema: ApartmentPostSchema },
       { name: CarPost.name, schema: CarPostSchema },
-      { name: ElectricBicyclePost.name, schema: ElectricBicyclePostSchema },
+      {
+        name: ElectricBicyclePost.name,
+        schema: ElectricBicyclePostSchema,
+      },
       { name: GroundPost.name, schema: GroundPostSchema },
       { name: HousePost.name, schema: HousePostSchema },
       { name: LaptopPost.name, schema: LaptopPostSchema },
@@ -64,7 +83,7 @@ import { UserModule } from 'src/user/user.module';
     UserModule,
   ],
   controllers: [PostController],
-  providers: [PostService, PostRepository],
+  providers: [PostService, PostRepository, EmailService],
   exports: [PostService, PostModule],
 })
 export class PostModule {}

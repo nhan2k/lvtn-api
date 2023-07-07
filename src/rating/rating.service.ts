@@ -14,4 +14,20 @@ export class RatingService {
       throw new Error(error.message);
     }
   }
+
+  getAll(userId: string) {
+    try {
+      return this.ratingRepository.getAll(userId);
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  getRatingAvg(userId: string) {
+    try {
+      return this.ratingRepository.getRatingAvg(userId);
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
 }

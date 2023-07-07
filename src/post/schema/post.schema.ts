@@ -25,6 +25,12 @@ export class Post {
   status: string;
 
   @Prop({
+    type: Boolean,
+    default: false,
+  })
+  isSelled: boolean;
+
+  @Prop({
     type: String,
     allowNull: true,
   })
@@ -47,6 +53,18 @@ export class Post {
 
   @Prop({ type: Date, default: null })
   expiredAt: Date;
+
+  @Prop({
+    type: Boolean,
+    default: false,
+  })
+  isPromoted: boolean;
+
+  @Prop({ type: Date, default: null })
+  promotedStartDate: Date;
+
+  @Prop({ type: Date, default: null })
+  promotedEndDate: Date;
 
   @Prop({ type: Date, default: Date.now })
   createdAt: Date;

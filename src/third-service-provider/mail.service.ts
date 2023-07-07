@@ -8,11 +8,15 @@ export class EmailService {
   constructor() {
     this.mailService = new MailService();
     this.mailService.setApiKey(
-      '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',
+      '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'
     );
   }
 
-  async sendEmail(to: string, subject: string, content: string): Promise<void> {
+  async sendEmail(
+    to: string,
+    subject: string,
+    content: string
+  ): Promise<void> {
     const msg = {
       to,
       from: 'nhanrooney113@gmail.com',

@@ -19,6 +19,7 @@ import { PhonePost } from '../schema/phonePost.schema';
 import { v2 as cloudinary } from 'cloudinary';
 import { TCategoryValue } from '../types';
 import { UserService } from 'src/user/user.service';
+import { EmailService } from 'src/third-service-provider/mail.service';
 
 @Injectable()
 export class PostRepository implements IPostRepository {
@@ -46,6 +47,7 @@ export class PostRepository implements IPostRepository {
     private readonly phonePostModel: Model<PhonePost>,
 
     private readonly userService: UserService,
+    private readonly emailService: EmailService
   ) {
     cloudinary.config({
       cloud_name: 'dtf3ihaqs',
@@ -65,7 +67,7 @@ export class PostRepository implements IPostRepository {
           title: { $regex: searchRegex },
         })
         .select(
-          '-status -createdAt -__v -expiredAt -deletedAt -categoryName -isReview -isSeen',
+          '-status -createdAt -__v -expiredAt -deletedAt -categoryName -isReview -isSeen'
         )
         .populate({
           path: 'apartmentPostId',
@@ -116,7 +118,9 @@ export class PostRepository implements IPostRepository {
     }
   }
 
-  async customerFindAll(categoryName?: TCategoryValue): Promise<Post[]> {
+  async customerFindAll(
+    categoryName?: TCategoryValue
+  ): Promise<Post[]> {
     try {
       switch (categoryName) {
         case 'Chung cư':
@@ -125,8 +129,19 @@ export class PostRepository implements IPostRepository {
               status: 'show',
               isReview: true,
               categoryName,
+              $or: [
+                {
+                  isPromoted: true,
+                },
+                {
+                  isPromoted: undefined,
+                },
+                {
+                  isPromoted: false,
+                },
+              ],
             })
-            .sort({ updatedAt: 'desc' })
+            .sort({ promotedStartDate: 'desc', updatedAt: 'desc' })
             .populate({
               path: 'apartmentPostId',
             })
@@ -137,8 +152,19 @@ export class PostRepository implements IPostRepository {
               status: 'show',
               isReview: true,
               categoryName,
+              $or: [
+                {
+                  isPromoted: true,
+                },
+                {
+                  isPromoted: undefined,
+                },
+                {
+                  isPromoted: false,
+                },
+              ],
             })
-            .sort({ updatedAt: 'desc' })
+            .sort({ promotedStartDate: 'desc', updatedAt: 'desc' })
             .populate({
               path: 'carPostId',
             })
@@ -149,8 +175,19 @@ export class PostRepository implements IPostRepository {
               status: 'show',
               isReview: true,
               categoryName,
+              $or: [
+                {
+                  isPromoted: true,
+                },
+                {
+                  isPromoted: undefined,
+                },
+                {
+                  isPromoted: false,
+                },
+              ],
             })
-            .sort({ updatedAt: 'desc' })
+            .sort({ promotedStartDate: 'desc', updatedAt: 'desc' })
             .populate({
               path: 'groundPostId',
             })
@@ -161,8 +198,19 @@ export class PostRepository implements IPostRepository {
               status: 'show',
               isReview: true,
               categoryName,
+              $or: [
+                {
+                  isPromoted: true,
+                },
+                {
+                  isPromoted: undefined,
+                },
+                {
+                  isPromoted: false,
+                },
+              ],
             })
-            .sort({ updatedAt: 'desc' })
+            .sort({ promotedStartDate: 'desc', updatedAt: 'desc' })
             .populate({
               path: 'housePostId',
             })
@@ -173,8 +221,19 @@ export class PostRepository implements IPostRepository {
               status: 'show',
               isReview: true,
               categoryName,
+              $or: [
+                {
+                  isPromoted: true,
+                },
+                {
+                  isPromoted: undefined,
+                },
+                {
+                  isPromoted: false,
+                },
+              ],
             })
-            .sort({ updatedAt: 'desc' })
+            .sort({ promotedStartDate: 'desc', updatedAt: 'desc' })
             .populate({
               path: 'laptopPostId',
             })
@@ -185,8 +244,19 @@ export class PostRepository implements IPostRepository {
               status: 'show',
               isReview: true,
               categoryName,
+              $or: [
+                {
+                  isPromoted: true,
+                },
+                {
+                  isPromoted: undefined,
+                },
+                {
+                  isPromoted: false,
+                },
+              ],
             })
-            .sort({ updatedAt: 'desc' })
+            .sort({ promotedStartDate: 'desc', updatedAt: 'desc' })
             .populate({
               path: 'motelRoomPostId',
             })
@@ -197,8 +267,19 @@ export class PostRepository implements IPostRepository {
               status: 'show',
               isReview: true,
               categoryName,
+              $or: [
+                {
+                  isPromoted: true,
+                },
+                {
+                  isPromoted: undefined,
+                },
+                {
+                  isPromoted: false,
+                },
+              ],
             })
-            .sort({ updatedAt: 'desc' })
+            .sort({ promotedStartDate: 'desc', updatedAt: 'desc' })
             .populate({
               path: 'officePostId',
             })
@@ -209,8 +290,19 @@ export class PostRepository implements IPostRepository {
               status: 'show',
               isReview: true,
               categoryName,
+              $or: [
+                {
+                  isPromoted: true,
+                },
+                {
+                  isPromoted: undefined,
+                },
+                {
+                  isPromoted: false,
+                },
+              ],
             })
-            .sort({ updatedAt: 'desc' })
+            .sort({ promotedStartDate: 'desc', updatedAt: 'desc' })
             .populate({
               path: 'motorbikePostId',
             })
@@ -221,8 +313,19 @@ export class PostRepository implements IPostRepository {
               status: 'show',
               isReview: true,
               categoryName,
+              $or: [
+                {
+                  isPromoted: true,
+                },
+                {
+                  isPromoted: undefined,
+                },
+                {
+                  isPromoted: false,
+                },
+              ],
             })
-            .sort({ updatedAt: 'desc' })
+            .sort({ promotedStartDate: 'desc', updatedAt: 'desc' })
             .populate({
               path: 'electricBicyclePostId',
             })
@@ -233,8 +336,19 @@ export class PostRepository implements IPostRepository {
               status: 'show',
               isReview: true,
               categoryName,
+              $or: [
+                {
+                  isPromoted: true,
+                },
+                {
+                  isPromoted: undefined,
+                },
+                {
+                  isPromoted: false,
+                },
+              ],
             })
-            .sort({ updatedAt: 'desc' })
+            .sort({ promotedStartDate: 'desc', updatedAt: 'desc' })
             .populate({
               path: 'phonePostId',
             })
@@ -244,8 +358,19 @@ export class PostRepository implements IPostRepository {
             .find({
               status: 'show',
               isReview: true,
+              $or: [
+                {
+                  isPromoted: true,
+                },
+                {
+                  isPromoted: undefined,
+                },
+                {
+                  isPromoted: false,
+                },
+              ],
             })
-            .sort({ updatedAt: 'desc' })
+            .sort({ promotedStartDate: 'desc', updatedAt: 'desc' })
             .exec();
       }
     } catch (error) {
@@ -255,20 +380,28 @@ export class PostRepository implements IPostRepository {
 
   async adminFindAll(): Promise<Post[]> {
     try {
-      return await this.postModel.find().sort({ updatedAt: 'desc' }).exec();
+      return await this.postModel
+        .find()
+        .sort({ promotedStartDate: 'desc', updatedAt: 'desc' })
+        .exec();
     } catch (error) {
       throw new Error(error.message);
     }
   }
 
-  async userFindAll(userId: string, status: string): Promise<Post[]> {
+  async userFindAll(
+    userId: string,
+    status: string,
+    isSelled = false
+  ): Promise<Post[]> {
     try {
       return await this.postModel
         .find({
           userId,
           status,
+          isSelled,
         })
-        .sort({ updatedAt: 'desc' })
+        .sort({ promotedStartDate: 'desc', updatedAt: 'desc' })
         .populate({
           path: 'userId',
           select: '-__v -password',
@@ -287,7 +420,7 @@ export class PostRepository implements IPostRepository {
           isSeen: false,
           isReview: true,
         })
-        .sort({ updatedAt: 'desc' })
+        .sort({ promotedStartDate: 'desc', updatedAt: 'desc' })
         .exec();
     } catch (error) {
       throw new Error(error.message);
@@ -357,7 +490,7 @@ export class PostRepository implements IPostRepository {
   async create(
     createPostDto: CreatePostDto,
     files: any,
-    userId: string,
+    userId: string
   ): Promise<Post> {
     try {
       const user = await this.userService.findOne(userId);
@@ -368,8 +501,14 @@ export class PostRepository implements IPostRepository {
         numberOfposts: user.numberOfposts + 1,
       });
 
-      const { title, content, totalPrice, categoryName, address, ...rest } =
-        createPostDto;
+      const {
+        title,
+        content,
+        totalPrice,
+        categoryName,
+        address,
+        ...rest
+      } = createPostDto;
 
       const imgPaths = [];
       const options = {
@@ -378,7 +517,10 @@ export class PostRepository implements IPostRepository {
         overwrite: true,
       };
       const uploadPromises = files.map(async (file) => {
-        const result = await cloudinary.uploader.upload(file?.path, options);
+        const result = await cloudinary.uploader.upload(
+          file?.path,
+          options
+        );
         if (result.public_id) {
           imgPaths.push(result.public_id);
         }
@@ -475,13 +617,15 @@ export class PostRepository implements IPostRepository {
           return await createdPost.save();
 
         case 'Xe điện':
-          const electricBicyclePost = new this.electricBicyclePostModel({
-            ...rest,
-            address: user.address,
-          });
+          const electricBicyclePost =
+            new this.electricBicyclePostModel({
+              ...rest,
+              address: user.address,
+            });
           const electricBicycle = await electricBicyclePost.save();
 
-          createdPost.electricBicyclePostId = electricBicycle._id.toString();
+          createdPost.electricBicyclePostId =
+            electricBicycle._id.toString();
           return await createdPost.save();
 
         case 'Điện thoại':
@@ -500,7 +644,10 @@ export class PostRepository implements IPostRepository {
       throw new Error(error.message);
     }
   }
-  async update(id: string, updatePostDto: UpdatePostDto): Promise<Post> {
+  async update(
+    id: string,
+    updatePostDto: UpdatePostDto
+  ): Promise<Post> {
     try {
       const postUpdate = await this.postModel
         .findByIdAndUpdate(id, updatePostDto, { new: true })
@@ -509,6 +656,14 @@ export class PostRepository implements IPostRepository {
           select: '-_iv -__v',
         })
         .exec();
+
+      if (postUpdate.status === 'denined') {
+        await this.emailService.sendEmail(
+          (postUpdate?.userId as any)?.email,
+          'Một Bài viết của bạn bị từ chối',
+          postUpdate.reason
+        );
+      }
 
       return postUpdate;
     } catch (error) {
@@ -531,7 +686,85 @@ export class PostRepository implements IPostRepository {
         {
           expiredAt: { $lte: currentDate },
         },
-        { $set: { status: 'expired' } },
+        { $set: { status: 'expired' } }
+      );
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async promote(id: string, data: UpdatePostDto, userId: string) {
+    try {
+      const currentDate = new Date();
+      await this.userService.getUserWalletAndCalculate(
+        userId,
+        data.coin
+      );
+      const post = await this.postModel
+        .findById(id)
+        .select('expiredAt')
+        .exec();
+      return await this.postModel
+        .findByIdAndUpdate(
+          id,
+          {
+            $set: {
+              isPromoted: true,
+              promotedStartDate: currentDate,
+              promotedEndDate: moment(currentDate).add(
+                data.promotedEndDate,
+                'day'
+              ),
+              expiredAt: moment(post?.expiredAt).add(
+                data.promotedEndDate,
+                'day'
+              ),
+            },
+          },
+          {
+            new: true,
+          }
+        )
+        .exec();
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async rotatePromotedPosts() {
+    try {
+      const currentDate = new Date();
+
+      const post = await this.postModel
+        .findOneAndUpdate(
+          {
+            isPromoted: true,
+            promotedEndDate: { $gte: currentDate },
+          },
+          { $set: { promotedStartDate: currentDate } },
+          { sort: { promotedStartDate: 1 } }
+        )
+        .exec();
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async removePromotedPosts(): Promise<void> {
+    try {
+      const currentDate = new Date();
+      await this.postModel.updateMany(
+        {
+          isPromoted: true,
+          promotedEndDate: { $lt: currentDate },
+        },
+        {
+          $set: {
+            isPromoted: false,
+            promotedEndDate: null,
+            promotedStartDate: null,
+          },
+        }
       );
     } catch (error) {
       throw new Error(error.message);

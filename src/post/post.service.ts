@@ -8,9 +8,17 @@ import { TCategoryValue } from './types';
 export class PostService {
   constructor(private readonly postRepository: PostRepository) {}
 
-  async create(createPostDto: CreatePostDto, files: any, userId: string) {
+  async create(
+    createPostDto: CreatePostDto,
+    files: any,
+    userId: string
+  ) {
     try {
-      return await this.postRepository.create(createPostDto, files, userId);
+      return await this.postRepository.create(
+        createPostDto,
+        files,
+        userId
+      );
     } catch (error) {
       throw new Error(error.message);
     }
@@ -22,7 +30,9 @@ export class PostService {
     district?: string;
   }) {
     try {
-      const response = await this.postRepository.customerFindAll(filter.name);
+      const response = await this.postRepository.customerFindAll(
+        filter.name
+      );
       if (filter.district) {
         return response.filter((res) => {
           for (const key in res) {
@@ -57,9 +67,17 @@ export class PostService {
     }
   }
 
-  async userFindAll(userId: string, status: string) {
+  async userFindAll(
+    userId: string,
+    status: string,
+    isSelled?: boolean
+  ) {
     try {
-      return await this.postRepository.userFindAll(userId, status);
+      return await this.postRepository.userFindAll(
+        userId,
+        status,
+        isSelled
+      );
     } catch (error) {
       throw new Error(error.message);
     }
@@ -127,10 +145,40 @@ export class PostService {
     }
   }
 
+  public async promote(
+    id: string,
+    data: UpdatePostDto,
+    userId: string
+  ) {
+    try {
+      return await this.postRepository.promote(id, data, userId);
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
   // Cron
   public async findPostExpiredAndUpdate() {
     try {
       return await this.postRepository.findPostExpiredAndUpdate();
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  // Cron
+  async rotatePromotedPosts() {
+    try {
+      return await this.postRepository.rotatePromotedPosts();
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  // Cron
+  async removePromotedPosts() {
+    try {
+      return await this.postRepository.removePromotedPosts();
     } catch (error) {
       throw new Error(error.message);
     }

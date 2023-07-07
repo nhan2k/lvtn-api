@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserRepository } from './repository/user.repository';
+import { UpdateWalletDto } from './dto/update-wallet.dto';
 
 @Injectable()
 export class UserService {
@@ -50,6 +51,93 @@ export class UserService {
   async update(id: string, updateUserDto: UpdateUserDto) {
     try {
       return await this.userRepository.update(id, updateUserDto);
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async getWallet(id: string) {
+    try {
+      return await this.userRepository.getWallet(id);
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async getUserWalletAndCalculate(userId: string, coin: number) {
+    try {
+      return await this.userRepository.getUserWalletAndCalculate(
+        userId,
+        coin
+      );
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async addCoin(id: string, data: UpdateWalletDto) {
+    try {
+      return await this.userRepository.addCoin(id, data);
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async createPayment(id: string, data: UpdateWalletDto) {
+    try {
+      return await this.userRepository.createPayment(id, data);
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async getAllPayment() {
+    try {
+      return await this.userRepository.getAllPayment();
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async updatePayment(data: { status: string }) {
+    try {
+      return await this.userRepository.getAllPayment();
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async verifySendEmail(userId: string) {
+    try {
+      return await this.userRepository.verifyEmail(
+        userId,
+        'sendMailVerify'
+      );
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async verifyEmail(userId: string) {
+    try {
+      return await this.userRepository.verifyEmail(
+        userId,
+        'verifyEmail'
+      );
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async updateProfile(
+    userId: string,
+    createPaymentDto: UpdateUserDto
+  ) {
+    try {
+      return await this.userRepository.updateProfile(
+        userId,
+        createPaymentDto
+      );
     } catch (error) {
       throw new Error(error.message);
     }

@@ -31,7 +31,11 @@ export class User {
   @Prop({ type: String, enum: ['user', 'admin'], default: 'user' })
   role: string;
 
-  @Prop({ type: String, enum: ['active', 'inActive'], default: 'active' })
+  @Prop({
+    type: String,
+    enum: ['active', 'inActive'],
+    default: 'active',
+  })
   status: string;
 
   @Prop({ type: Object, required: true })
@@ -39,6 +43,12 @@ export class User {
 
   @Prop({ type: Number, default: 0 })
   numberOfposts: number;
+
+  @Prop({ type: Boolean, default: false })
+  phoneNumberVerified: boolean;
+
+  @Prop({ type: Boolean, default: false })
+  emailVerified: boolean;
 
   @Prop({ type: Date, default: Date.now })
   createdAt: Date;

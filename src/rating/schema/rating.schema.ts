@@ -5,11 +5,11 @@ export type RatingDocument = HydratedDocument<Rating>;
 
 @Schema()
 export class Rating {
-  @Prop({ type: Number })
-  avgRate: number;
-
   @Prop({ type: Number, default: 0 })
-  count: number;
+  rate: number;
+
+  @Prop({ type: String })
+  comment: string;
 
   @Prop({ type: Date, default: Date.now })
   createdAt: Date;
@@ -22,6 +22,18 @@ export class Rating {
     ref: 'User',
   })
   userId: string;
+
+  @Prop({
+    type: SchemaTypes.Types.ObjectId,
+    ref: 'User',
+  })
+  userTargetId: string;
+
+  @Prop({
+    type: SchemaTypes.Types.ObjectId,
+    ref: 'Post',
+  })
+  postId: string;
 }
 
 export const RatingSchema = SchemaFactory.createForClass(Rating);

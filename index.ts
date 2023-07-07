@@ -1,0 +1,15 @@
+// typePost
+//   type
+//   nameOfBuilding
+//   address
+//   codeOfBuilding
+//   block
+//   floor
+//   typeOfBuilding
+//   numberOfBedroom
+//   numberOfBathroom
+//   balconnyDirection
+//   doorDirection
+//   interiorCondition
+//   juridical
+//   area
