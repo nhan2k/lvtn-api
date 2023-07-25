@@ -8,13 +8,11 @@ export interface IPostRepository {
   create(
     createPostDto: CreatePostDto,
     imgPaths: string[],
-    userId: string,
+    userId: string
   ): Promise<Post>;
   update(id: string, updatePostDto: UpdatePostDto): Promise<Post>;
   delete(id: string): Promise<Post>;
-  count(): Promise<number>;
   userFindAll(userId: string, status: string): Promise<Post[]>;
-  adminFindAll(userId: string): Promise<Post[]>;
   search(keyword: string): Promise<Post[]>;
   userFindAllPostUnSeen(userId: string): Promise<Post[]>;
 }

@@ -8,7 +8,7 @@ export class SmsService {
   constructor() {
     this.twilioClient = twilio(
       'AC681423c6f4a1a17a69ac683dc7667ea4',
-      'd4027abb5a7828f4854e74923a264207'
+      'be16e5b9962db539588fed307a8a7dcc'
     );
   }
 

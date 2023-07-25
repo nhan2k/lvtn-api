@@ -358,17 +358,6 @@ export class PostRepository implements IPostRepository {
             .find({
               status: 'show',
               isReview: true,
-              $or: [
-                {
-                  isPromoted: true,
-                },
-                {
-                  isPromoted: undefined,
-                },
-                {
-                  isPromoted: false,
-                },
-              ],
             })
             .sort({ promotedStartDate: 'desc', updatedAt: 'desc' })
             .exec();
@@ -378,12 +367,24 @@ export class PostRepository implements IPostRepository {
     }
   }
 
-  async adminFindAll(): Promise<Post[]> {
+  async adminFindAll(filter: {
+    pageNumber: number;
+    pageSize: number;
+  }): Promise<any> {
     try {
-      return await this.postModel
+      const { pageNumber, pageSize = 10 } = filter;
+      const totalCount = await this.postModel.count();
+      const data = await this.postModel
         .find()
+        .skip(pageNumber * pageSize)
+        .limit(pageSize)
         .sort({ promotedStartDate: 'desc', updatedAt: 'desc' })
         .exec();
+
+      return {
+        data,
+        totalCount,
+      };
     } catch (error) {
       throw new Error(error.message);
     }
@@ -427,9 +428,17 @@ export class PostRepository implements IPostRepository {
     }
   }
 
-  async count(): Promise<number> {
+  async count(): Promise<number[]> {
     try {
-      return await this.postModel.count().exec();
+      const all = await this.postModel.count().exec();
+      const show = await this.postModel
+        .count({ status: 'show' })
+        .exec();
+      const denined = await this.postModel
+        .count({ status: 'denined' })
+        .exec();
+
+      return [all, show, denined];
     } catch (error) {
       throw new Error(error.message);
     }
@@ -496,6 +505,10 @@ export class PostRepository implements IPostRepository {
       const user = await this.userService.findOne(userId);
       if (user.numberOfposts > 5) {
         throw new Error('Bạn đã đăng tối đa số tin trong tháng');
+      }
+
+      if (!user.phoneNumberVerified) {
+        throw new Error('Bạn chưa xác thực số điện thoại');
       }
       await this.userService.update(userId, {
         numberOfposts: user.numberOfposts + 1,
@@ -766,6 +779,93 @@ export class PostRepository implements IPostRepository {
           },
         }
       );
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async getALlSuggests(userId: string): Promise<any> {
+    try {
+      const user = await this.userService.findOne(userId);
+      return await this.postModel
+        .find({
+          isReview: true,
+          categoryName: {
+            $in: user.suggests,
+          },
+        })
+        .exec();
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async updateCountSaw(postId: string): Promise<void> {
+    try {
+      await this.postModel.findByIdAndUpdate(postId, {
+        $inc: {
+          countSaw: 1,
+        },
+      });
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async getPostPromoteInHome(filter: {
+    pageNumber: number;
+    pageSize: number;
+  }): Promise<any> {
+    try {
+      const { pageNumber, pageSize = 10 } = filter;
+      const totalCount = await this.postModel.count({
+        isReview: true,
+        isPromoted: true,
+      });
+
+      const data = await this.postModel
+        .find({
+          isReview: true,
+          isPromoted: true,
+        })
+        .skip((pageNumber - 1) * pageSize)
+        .limit(pageSize)
+        .sort({
+          promotedStartDate: 'desc',
+        });
+
+      return {
+        data,
+        totalCount,
+      };
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async getAllAndSorting(filter: {
+    pageNumber: number;
+    pageSize: number;
+    name: string;
+    orderBy: string;
+  }): Promise<any> {
+    try {
+      const { name, orderBy, pageNumber = 1, pageSize = 10 } = filter;
+
+      const totalCount = await this.postModel.count();
+      const data = await this.postModel
+        .find()
+        .skip((pageNumber - 1) * pageSize)
+        .limit(pageSize)
+        .sort({
+          [name]: orderBy === 'asc' ? 'asc' : 'desc',
+        })
+        .exec();
+
+      return {
+        data,
+        totalCount,
+      };
     } catch (error) {
       throw new Error(error.message);
     }

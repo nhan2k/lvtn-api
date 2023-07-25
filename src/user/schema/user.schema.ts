@@ -55,6 +55,12 @@ export class User {
 
   @Prop({ type: Date, default: Date.now })
   updatedAt: Date;
+
+  @Prop({ type: String, allowNull: true, required: false })
+  opt: string;
+
+  @Prop({ type: Array<String>, allowNull: true, required: false })
+  suggests: string[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

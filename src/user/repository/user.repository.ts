@@ -39,17 +39,87 @@ export class UserRepository implements IUserRepository {
       throw new Error(error.message);
     }
   }
-  async count(): Promise<number> {
+
+  async findAllSuggests(
+    categoryName: string,
+    userId: string
+  ): Promise<any[]> {
     try {
       return await this.userModel
-        .count({
-          role: 'user',
+        .find({
+          suggests: categoryName,
+          _id: {
+            $ne: userId,
+          },
         })
+        .sort({ updatedAt: 'desc' })
         .exec();
     } catch (error) {
       throw new Error(error.message);
     }
   }
+
+  async count(): Promise<number[]> {
+    try {
+      const allUser = await this.userModel
+        .count({
+          role: 'user',
+        })
+        .exec();
+
+      const userOnline = await this.userModel
+        .count({
+          role: 'user',
+          status: 'active',
+        })
+        .exec();
+
+      const userBaned = await this.userModel
+        .count({
+          role: 'user',
+          status: 'inActive',
+        })
+        .exec();
+
+      return [allUser, userOnline, userBaned];
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async countPayment(): Promise<number[]> {
+    try {
+      const allPayment = await this.paymentModel.count().exec();
+
+      const paymentCompleted = await this.paymentModel
+        .count({
+          status: 'completed',
+        })
+        .exec();
+
+      const paymentDenined = await this.paymentModel
+        .count({
+          status: 'denined',
+        })
+        .exec();
+
+      const paymentPending = await this.paymentModel
+        .count({
+          status: 'pending',
+        })
+        .exec();
+
+      return [
+        allPayment,
+        paymentPending,
+        paymentCompleted,
+        paymentDenined,
+      ];
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
   async findOne(id: string): Promise<User> {
     try {
       return await this.userModel
@@ -107,15 +177,17 @@ export class UserRepository implements IUserRepository {
         createUserDto.password,
         salt
       );
-      createUserDto.phoneNumber =
-        '+84' + createUserDto.phoneNumber.slice(1);
+      createUserDto.phoneNumber = createUserDto.phoneNumber;
       const createdUser = new this.userModel(createUserDto);
       const wallet = await this.walletModel.create({
         userId: createdUser._id,
       });
       await wallet.save();
       const opt = generateOTP();
-      await this.smsService.sendOtp(createdUser.phoneNumber, opt);
+      await this.smsService.sendOtp(
+        '+84' + createdUser.phoneNumber.substring(1),
+        opt
+      );
 
       await createdUser.save();
       return true;
@@ -201,10 +273,13 @@ export class UserRepository implements IUserRepository {
 
   async getAllPayment(): Promise<any[]> {
     try {
-      return await this.paymentModel.find().populate({
-        path: 'userId',
-        select: 'phoneNumber',
-      });
+      return await this.paymentModel
+        .find()
+        .populate({
+          path: 'userId',
+          select: 'phoneNumber',
+        })
+        .sort({ createdAt: 'desc' });
     } catch (error) {
       throw new Error(error.message);
     }
@@ -286,6 +361,42 @@ export class UserRepository implements IUserRepository {
     }
   }
 
+  async verifyPhone(
+    userId: string,
+    option: string,
+    otp?: string
+  ): Promise<boolean> {
+    try {
+      const user = await this.userModel.findById(userId);
+
+      if (!user) {
+        throw new Error('Not found user');
+      }
+
+      if (option === 'sendPhoneVerify') {
+        const otp = generateOTP();
+        await this.smsService.sendOtp(
+          '+84' + user.phoneNumber.substring(1),
+          otp
+        );
+        await this.userModel.findByIdAndUpdate(userId, {
+          $set: { opt: otp },
+        });
+        return true;
+      }
+      if (user.opt === otp) {
+        await this.userModel.findByIdAndUpdate(userId, {
+          $set: { phoneNumberVerified: true },
+        });
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
   async updateProfile(
     userId: string,
     createPaymentDto: UpdateUserDto
@@ -298,6 +409,21 @@ export class UserRepository implements IUserRepository {
       );
 
       return user;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  public async createSuggest(
+    userId: string,
+    data: { categoryName: string }
+  ) {
+    try {
+      return await this.userModel.findByIdAndUpdate(userId, {
+        $push: {
+          suggests: data.categoryName,
+        },
+      });
     } catch (error) {
       throw new Error(error.message);
     }

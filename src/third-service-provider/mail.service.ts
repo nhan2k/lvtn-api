@@ -8,7 +8,7 @@ export class EmailService {
   constructor() {
     this.mailService = new MailService();
     this.mailService.setApiKey(
-      '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'
+      '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'
     );
   }
 
@@ -27,7 +27,10 @@ export class EmailService {
 
     try {
       await this.mailService.send(msg);
-      console.log('Email sent successfully');
+      console.log(
+        'Email sent successfully',
+        JSON.stringify(msg, null, 4)
+      );
     } catch (error) {
       console.error('Error sending email:', error);
     }

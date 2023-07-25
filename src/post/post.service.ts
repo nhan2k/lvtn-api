@@ -33,35 +33,44 @@ export class PostService {
       const response = await this.postRepository.customerFindAll(
         filter.name
       );
+
+      // If province is provided, filter by province
+      if (filter.province) {
+        return response.filter((res) => {
+          for (const key in res) {
+            if (key.includes('PostId') && res[key]) {
+              return res[key]?.address?.province === filter.province;
+            }
+          }
+        });
+      }
+
+      // If district is provided, filter by district
       if (filter.district) {
         return response.filter((res) => {
           for (const key in res) {
             if (key.includes('PostId') && res[key]) {
               return (
-                res[key]?.address?.province === filter?.province &&
-                res[key]?.address?.district === filter?.district
+                res[key]?.address?.province === filter.province &&
+                res[key]?.address?.district === filter.district
               );
             }
           }
         });
       }
-      if (filter.province) {
-        return response.filter((res) => {
-          for (const key in res) {
-            if (key.includes('PostId') && res[key]) {
-              return res[key]?.address?.province === filter?.province;
-            }
-          }
-        });
-      }
+
       return response;
     } catch (error) {
       throw new Error(error.message);
     }
   }
-  async adminFindAll() {
+
+  async adminFindAll(filter: {
+    pageNumber: number;
+    pageSize: number;
+  }) {
     try {
-      return await this.postRepository.adminFindAll();
+      return await this.postRepository.adminFindAll(filter);
     } catch (error) {
       throw new Error(error.message);
     }
@@ -179,6 +188,46 @@ export class PostService {
   async removePromotedPosts() {
     try {
       return await this.postRepository.removePromotedPosts();
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async getALlSuggests(userId: string) {
+    try {
+      return await this.postRepository.getALlSuggests(userId);
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async updateCountSaw(postId: string) {
+    try {
+      return await this.postRepository.updateCountSaw(postId);
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async getPostPromoteInHome(filter: {
+    pageNumber: number;
+    pageSize: number;
+  }) {
+    try {
+      return await this.postRepository.getPostPromoteInHome(filter);
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async getAllAndSorting(filter: {
+    pageNumber: number;
+    pageSize: number;
+    name: string;
+    orderBy: string;
+  }) {
+    try {
+      return await this.postRepository.getAllAndSorting(filter);
     } catch (error) {
       throw new Error(error.message);
     }

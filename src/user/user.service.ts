@@ -32,6 +32,17 @@ export class UserService {
     }
   }
 
+  async findAllSuggests(categoryName: string, userId: string) {
+    try {
+      return await this.userRepository.findAllSuggests(
+        categoryName,
+        userId
+      );
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
   async findOne(id: string) {
     try {
       return await this.userRepository.findOne(id);
@@ -43,6 +54,14 @@ export class UserService {
   async count() {
     try {
       return await this.userRepository.count();
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async countPayment() {
+    try {
+      return await this.userRepository.countPayment();
     } catch (error) {
       throw new Error(error.message);
     }
@@ -129,6 +148,29 @@ export class UserService {
     }
   }
 
+  async verifySendPhone(userId: string) {
+    try {
+      return await this.userRepository.verifyPhone(
+        userId,
+        'sendPhoneVerify'
+      );
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async verifyPhone(userId: string, otp?: string) {
+    try {
+      return await this.userRepository.verifyPhone(
+        userId,
+        'verifyPhone',
+        otp
+      );
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
   async updateProfile(
     userId: string,
     createPaymentDto: UpdateUserDto
@@ -138,6 +180,17 @@ export class UserService {
         userId,
         createPaymentDto
       );
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  public async createSuggest(
+    userId: string,
+    data: { categoryName: string }
+  ) {
+    try {
+      return await this.userRepository.createSuggest(userId, data);
     } catch (error) {
       throw new Error(error.message);
     }

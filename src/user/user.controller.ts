@@ -49,6 +49,34 @@ export class UserController {
   }
 
   @UseGuards(AuthGuard)
+  @Get('verifySendPhone')
+  async verifySendPhone(@Request() req: any) {
+    try {
+      return await this.userService.verifySendPhone(req.user.id);
+    } catch (error) {
+      throw new BadRequestException(
+        'Something bad happened',
+        error.message
+      );
+    }
+  }
+
+  @Post('verifyPhone/:id')
+  async verifyPhone(
+    @Param('id') userId: string,
+    @Body() opt: { otp: string }
+  ) {
+    try {
+      return await this.userService.verifyPhone(userId, opt.otp);
+    } catch (error) {
+      throw new BadRequestException(
+        'Something bad happened',
+        error.message
+      );
+    }
+  }
+
+  @UseGuards(AuthGuard)
   @Get('payment')
   async getAllPayment() {
     try {
@@ -116,6 +144,10 @@ export class UserController {
       });
       return token;
     } catch (error) {
+      console.log(
+        '🚀 ~ file: user.controller.ts:123 ~ UserController ~ error:',
+        error
+      );
       throw new BadRequestException(
         'Something bad happened',
         error.message
@@ -128,6 +160,19 @@ export class UserController {
   async count() {
     try {
       return await this.userService.count();
+    } catch (error) {
+      throw new BadRequestException(
+        'Something bad happened',
+        error.message
+      );
+    }
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('count/payment')
+  async countPayment() {
+    try {
+      return await this.userService.countPayment();
     } catch (error) {
       throw new BadRequestException(
         'Something bad happened',
@@ -208,6 +253,22 @@ export class UserController {
         req.user.id,
         createPaymentDto
       );
+    } catch (error) {
+      throw new BadRequestException(
+        'Something bad happened',
+        error.message
+      );
+    }
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('suggest')
+  async createSuggest(
+    @Body() data: { categoryName: string },
+    @Request() req
+  ) {
+    try {
+      return await this.userService.createSuggest(req.user.id, data);
     } catch (error) {
       throw new BadRequestException(
         'Something bad happened',

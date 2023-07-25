@@ -10,7 +10,7 @@ export class Payment {
 
   @Prop({
     type: String,
-    enum: ['pending', 'completed'],
+    enum: ['pending', 'completed', 'denined'],
     default: 'pending',
   })
   status: string;

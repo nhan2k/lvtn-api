@@ -46,6 +46,7 @@ import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { UserModule } from 'src/user/user.module';
 import { EmailService } from 'src/third-service-provider/mail.service';
+import { Suggest, SuggestSchema } from './schema/suggest.schema';
 
 @Module({
   imports: [
@@ -64,6 +65,7 @@ import { EmailService } from 'src/third-service-provider/mail.service';
       { name: MotorbikePost.name, schema: MotorbikePostSchema },
       { name: OfficePost.name, schema: OfficePostSchema },
       { name: PhonePost.name, schema: PhonePostSchema },
+      { name: Suggest.name, schema: SuggestSchema },
     ]),
     MulterModule.register({
       dest: './uploads',

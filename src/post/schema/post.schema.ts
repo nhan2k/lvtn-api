@@ -167,6 +167,12 @@ export class Post {
     ref: 'User',
   })
   userId: string;
+
+  @Prop({
+    type: Number,
+    default: 1,
+  })
+  countSaw: number;
 }
 
 const PostSchema = SchemaFactory.createForClass(Post);

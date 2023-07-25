@@ -28,6 +28,71 @@ export class PostController {
 
   constructor(private readonly postService: PostService) {}
 
+  @Patch('countSaw')
+  async countSaw(@Body() data: { postId: string }) {
+    try {
+      return await this.postService.updateCountSaw(data.postId);
+    } catch (error) {
+      throw new BadRequestException(
+        'Something bad happened',
+        error.message
+      );
+    }
+  }
+
+  @Get('hotPost')
+  async getPostPromoteInHome(
+    @Query('pageNumber') pageNumber: number,
+    @Query('pageSize') pageSize: number
+  ) {
+    try {
+      return await this.postService.getPostPromoteInHome({
+        pageNumber,
+        pageSize,
+      });
+    } catch (error) {
+      throw new BadRequestException(
+        'Something bad happened',
+        error.message
+      );
+    }
+  }
+
+  @Get('sort')
+  async getAllAndSorting(
+    @Query('pageNumber') pageNumber: number,
+    @Query('pageSize') pageSize: number,
+    @Query('name') name: string,
+    @Query('orderBy') orderBy: string
+  ) {
+    try {
+      return await this.postService.getAllAndSorting({
+        pageNumber,
+        pageSize,
+        name,
+        orderBy,
+      });
+    } catch (error) {
+      throw new BadRequestException(
+        'Something bad happened',
+        error.message
+      );
+    }
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('suggest')
+  async getALlSuggests(@Request() req) {
+    try {
+      return await this.postService.getALlSuggests(req.user.id);
+    } catch (error) {
+      throw new BadRequestException(
+        'Something bad happened',
+        error.message
+      );
+    }
+  }
+
   @Get('search')
   async search(@Query() filter: any) {
     try {
@@ -100,9 +165,16 @@ export class PostController {
 
   @UseGuards(AuthGuard)
   @Get('admin')
-  async adminFindAll() {
+  async adminFindAll(
+    @Query('pageNumber') pageNumber: number,
+    @Query('pageSize') pageSize: number
+  ) {
     try {
-      return await this.postService.adminFindAll();
+      const filter = {
+        pageNumber,
+        pageSize,
+      };
+      return await this.postService.adminFindAll(filter);
     } catch (error) {
       throw new BadRequestException(
         'Something bad happened',
@@ -118,6 +190,7 @@ export class PostController {
       name?: TCategoryValue;
       province?: string;
       district?: string;
+      price?: string;
     }
   ) {
     try {
